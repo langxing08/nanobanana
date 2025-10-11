@@ -5,6 +5,7 @@ import { useState } from 'react';
 export default function Page() {
   type EditorTab = 'image' | 'text';
   const [activeTab, setActiveTab] = useState<EditorTab>('image');
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const tabs: { id: EditorTab; label: string; icon: string }[] = [
     { id: 'image', label: '图生图', icon: '🖼️' },
     { id: 'text', label: '文生图', icon: '📝' },
@@ -53,6 +54,38 @@ export default function Page() {
       role: '专业编辑师',
       quote: '“场景融合异常自然，一键编辑每天都能生成客户即用的画面。”',
       accentGradient: 'from-[#ffbe63] via-[#ff8f3a] to-[#ff5f39]',
+    },
+  ];
+  const faqItems = [
+    {
+      question: 'Nano Banana 是什么？',
+      answerZh: 'Nano Banana 是一款专注角色一致性与场景保留的 AI 图像编辑平台，帮助创作者快速完成高质量视觉作品。',
+      answerEn: 'Nano Banana is an AI image editor focused on character consistency and scene fidelity, delivering polished visuals in seconds.',
+    },
+    {
+      question: '它是如何工作的？',
+      answerZh: '通过自然语言提示与智能遮罩，系统自动理解场景上下文并执行精准编辑。',
+      answerEn: 'You describe edits in natural language, and the model applies context-aware adjustments using smart masking.',
+    },
+    {
+      question: '它比 Flux Kontext 好在哪里？',
+      answerZh: 'Nano Banana 在多角色一致性、背景保留与批处理效率上均优于 Flux Kontext。',
+      answerEn: 'Compared with Flux Kontext, Nano Banana excels at multi-character alignment, scene preservation, and batch speed.',
+    },
+    {
+      question: '我可以用于商业项目吗？',
+      answerZh: '可以，在遵守许可条款的前提下，商业团队可将生成素材直接用于发布。',
+      answerEn: 'Yes. Commercial teams can ship outputs directly, provided the standard licensing terms are followed.',
+    },
+    {
+      question: '它能处理什么类型的编辑？',
+      answerZh: '支持角色换装、场景置换、光影微调以及多图跨镜头一致性。',
+      answerEn: 'It covers wardrobe swaps, scene replacements, lighting tweaks, and cross-shot consistency for series of images.',
+    },
+    {
+      question: '在哪里可以试用 Nano Banana？',
+      answerZh: '登录 Nano Banana 控制台即可获得试用额度，体验完整的图像编辑工作流。',
+      answerEn: 'Sign in to the Nano Banana console to access your trial credits and explore the full workflow.',
     },
   ];
 
@@ -402,26 +435,52 @@ export default function Page() {
       </section>
 
       {/* FAQ */}
-      <section className="section mt-16 mb-24">
+      <section className="section mt-20 mb-28">
         <div className="section-inner">
-          <p className="text-[12px] text-banana-500 font-bold text-center">常见问题</p>
-          <h2 className="text-[20px] font-semibold mt-2 text-center">常见问题解答</h2>
-          <div className="mt-4 grid gap-3">
-            {Array.from({length:5}).map((_,i)=> (
-              <details key={i} className="group rounded-xl overflow-hidden border border-[#efe9d8] bg-white shadow-soft">
-                <summary className="list-none cursor-pointer select-none px-4 py-3 text-[14px] font-medium flex items-center justify-between">
-                  <span>问题 {i+1}</span>
-                  <span className="text-[#a8a8a8]">▾</span>
-                </summary>
-                <div className="px-4 pb-3 text-[13px] text-[#666]">这里是回答内容的占位，说明如何使用与限制等。</div>
-              </details>
-            ))}
+          <div className="text-center">
+            <p className="text-[12px] font-semibold tracking-[3px] text-[#f59e0b]">常见问题</p>
+            <h2 className="mt-3 text-[28px] font-extrabold text-[#101827] md:text-[32px]">常见问题解答</h2>
+          </div>
+
+          <div className="mt-10 mx-auto max-w-3xl space-y-3">
+            {faqItems.map((faq, index) => {
+              const isOpen = openFaq === index;
+              return (
+                <div
+                  key={faq.question}
+                  className={`rounded-[18px] border ${isOpen ? 'border-[#ffc94b]' : 'border-[#fde58f]'} bg-white transition-colors duration-200`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : index)}
+                    className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left text-[15px] font-semibold text-[#1f2937]"
+                    aria-expanded={isOpen}
+                  >
+                    <span>{faq.question}</span>
+                    <span
+                      className={`inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#ffd95c] text-[16px] text-[#1f2937] transition-transform duration-200 ${
+                        isOpen ? 'rotate-180' : ''
+                      }`}
+                      aria-hidden
+                    >
+                      ▾
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="px-6 pb-6 text-[13px] leading-6 text-[#6b7280]">
+                      <p>{faq.answerZh}</p>
+                      <p className="mt-2 text-[12px] text-[#7d8796]">{faq.answerEn}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* 页脚极浅渐变 */}
-      <div className="h-24 bg-gradient-to-b from-transparent to-banana-50" />
+      {/* 页脚占位 */}
+      <div className="h-24" />
     </main>
   )
 }
