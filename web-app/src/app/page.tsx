@@ -9,6 +9,32 @@ export default function Page() {
     { id: 'image', label: '图生图', icon: '🖼️' },
     { id: 'text', label: '文生图', icon: '📝' },
   ];
+  const showcases = [
+    {
+      title: '超快速山景生成',
+      tag: 'Nano Banana速度',
+      subtitle: 'Nano Banana 优化神经引擎仅需 0.8 秒即可创建',
+      image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80',
+    },
+    {
+      title: '瞬间花园创作',
+      tag: 'Nano Banana速度',
+      subtitle: 'Nano Banana 技术毫秒级渲染复杂场景',
+      image: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1600&q=80',
+    },
+    {
+      title: '实时海滩合成',
+      tag: 'Nano Banana速度',
+      subtitle: 'Nano Banana 以光速提供照片级逼真效果',
+      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80',
+    },
+    {
+      title: '快速极光生成',
+      tag: 'Nano Banana速度',
+      subtitle: 'Nano Banana AI 即时处理高动态特效',
+      image: 'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&w=1600&q=80',
+    },
+  ];
 
   return (
     <main className="w-full">
@@ -281,24 +307,39 @@ export default function Page() {
         </div>
       </section>
 
-      {/* 闪电般的 AI 创作（示例卡） */}
-      <section className="section mt-16">
+      {/* 闪电般的 AI 创作（案例卡） */}
+      <section className="section mt-20">
         <div className="section-inner text-center">
-          <p className="text-[12px] text-banana-500 font-bold">常用模版</p>
-          <h2 className="text-[20px] font-semibold mt-2">闪电般的 AI 创作</h2>
-          <p className="text-[12px] text-[#8a8a8a] mt-1">只需几步即可完成</p>
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            {Array.from({length:4}).map((_,i)=> (
-              <div key={i} className="card-soft p-4 h-[180px] text-left grid">
-                <div className="justify-self-end text-[10px] text-white bg-banana-400 rounded-pill px-2 py-0.5">{i%2? '人像增强': '风格转换'}</div>
-                <div className="self-end">
-                  <h3 className="font-semibold mb-1">模版 {i+1}</h3>
-                  <p className="text-[12px] text-[#777]">放入图片，点击开始即可</p>
+          <p className="text-[12px] font-semibold tracking-[2px] text-[#f29b1d] uppercase">案例展示</p>
+          <h2 className="mt-3 text-[30px] font-extrabold text-[#1f2937]">闪电般的 AI 创作</h2>
+          <p className="mt-2 text-[14px] text-[#6b7280]">见证 Nano Banana 毫秒级生成作品</p>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-2">
+            {showcases.map((showcase, index) => (
+              <article
+                key={index}
+                className="group relative overflow-hidden rounded-[28px] border border-[#fbeaca] bg-gradient-to-b from-[#fffcf5] via-[#fff8ea] to-[#fff3e4] shadow-soft transition-transform hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(253,212,141,0.35)]"
+              >
+                <div className="relative h-[240px] w-full overflow-hidden rounded-[24px]">
+                  <div
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                    style={{ backgroundImage: `url(${showcase.image})` }}
+                  />
+                  <div className="absolute inset-0 rounded-[24px] bg-gradient-to-t from-[#fff9eb]/90 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  <div className="absolute inset-x-0 top-4 px-5">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[#ff9e2f] px-3 py-1 text-[11px] font-semibold uppercase tracking-[1px] text-white shadow-soft">
+                      <span className="text-[14px]">⚡</span>
+                      <span>{showcase.tag}</span>
+                    </span>
+                  </div>
                 </div>
-              </div>
+                <div className="rounded-[24px] bg-white px-6 pb-6 pt-5 text-left">
+                  <h3 className="text-[16px] font-semibold text-[#1f2937]">{showcase.title}</h3>
+                  <p className="mt-2 text-[12px] text-[#6b7280]">{showcase.subtitle}</p>
+                </div>
+              </article>
             ))}
           </div>
-          <div className="mt-6"><a className="rounded-pill bg-banana-300 text-ink h-[36px] inline-flex items-center px-4 shadow-soft" href="#">开始使用</a></div>
         </div>
       </section>
 
