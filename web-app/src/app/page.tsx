@@ -35,6 +35,26 @@ export default function Page() {
       image: 'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&w=1600&q=80',
     },
   ];
+  const creatorTestimonials = [
+    {
+      name: 'AIArtistPro',
+      role: '数字创作者',
+      quote: '“这个编辑器完全改变了我的工作流程，角色一致性始终如一，远超以往工具。”',
+      accentGradient: 'from-[#ffd76a] via-[#ffa43c] to-[#ff7d3b]',
+    },
+    {
+      name: 'ContentCreator',
+      role: 'UGC 专家',
+      quote: '“创建一致的 AI 影响者从未如此简单，在编辑过程中保持完美的面部细节。”',
+      accentGradient: 'from-[#ffc86c] via-[#ff9f3e] to-[#ff6f3a]',
+    },
+    {
+      name: 'PhotoEditor',
+      role: '专业编辑师',
+      quote: '“场景融合异常自然，一键编辑每天都能生成客户即用的画面。”',
+      accentGradient: 'from-[#ffbe63] via-[#ff8f3a] to-[#ff5f39]',
+    },
+  ];
 
   return (
     <main className="w-full">
@@ -344,20 +364,39 @@ export default function Page() {
       </section>
 
       {/* 创作者的声音 */}
-      <section className="section mt-16">
-        <div className="section-inner">
-          <p className="text-[12px] text-banana-500 font-bold text-center">评价</p>
-          <h2 className="text-[20px] font-semibold mt-2 text-center">创作者的声音</h2>
-          <div className="mt-4 grid gap-3">
-            {['@sashimi', '@generate', '@theo'].map((name, i)=> (
-              <div key={i} className="card p-4 flex items-center gap-3 bg-gradient-to-r from-white to-[#fff6e9]">
-                <div className="w-7 h-7 rounded-full bg-banana-300" />
-                <div className="text-[12px] flex-1">
-                  <div className="font-semibold">{name}</div>
-                  <div className="text-[#777]">非常流畅的体验，角色一致性处理得很好，推荐！</div>
-                </div>
-              </div>
-            ))}
+      <section className="section mt-20">
+        <div className="section-inner relative">
+          <div className="relative mx-auto max-w-2xl text-center">
+            <p className="text-[12px] font-semibold tracking-[3px] text-[#f59e0b]">用户评价</p>
+            <h2 className="mt-3 text-[30px] font-extrabold text-[#101827] md:text-[36px]">创作者的声音</h2>
+          </div>
+
+          <div className="relative mt-12">
+            <div className="relative grid gap-6 lg:grid-cols-3">
+              {creatorTestimonials.map((testimonial) => (
+                <article
+                  key={testimonial.name}
+                  className="relative aspect-[2/1] overflow-hidden rounded-[28px] border border-[#f4e4c8] bg-transparent text-left shadow-none transition-transform duration-200 hover:-translate-y-1"
+                >
+                  <div className="flex h-full flex-col px-6 py-6">
+                    <div className="flex items-center gap-4">
+                      <span
+                        aria-hidden
+                        className={`flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br ${testimonial.accentGradient} text-[18px] font-semibold text-white shadow-[0_16px_26px_rgba(255,171,72,0.35)] ring-4 ring-white/70`}
+                      >
+                        {testimonial.name.slice(0, 1)}
+                      </span>
+                      <div className="space-y-1">
+                        <p className="text-[15px] font-semibold text-[#111827] leading-[1.25]">{testimonial.name}</p>
+                        <p className="text-[11px] leading-[18px] text-[#6b7280]">{testimonial.role}</p>
+                      </div>
+                    </div>
+
+                    <p className="mt-5 text-[12px] leading-[22px] text-[#4a5362]">{testimonial.quote}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
