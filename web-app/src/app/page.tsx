@@ -448,7 +448,7 @@ export default function Page() {
               return (
                 <div
                   key={faq.question}
-                  className={`rounded-[18px] border ${isOpen ? 'border-[#ffc94b]' : 'border-[#fde58f]'} bg-white transition-colors duration-200`}
+                  className={`rounded-[18px] border ${isOpen ? 'border-[#ffc94b]' : 'border-[#fde58f]'} bg-transparent transition-colors duration-200`}
                 >
                   <button
                     type="button"
