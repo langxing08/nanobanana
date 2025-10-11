@@ -225,18 +225,56 @@ export default function Page() {
       </section>
 
       {/* 为什么选择 */}
-      <section className="section mt-16">
+      <section className="section mt-20">
         <div className="section-inner text-center">
-          <p className="text-[12px] text-banana-500 font-bold">为什么</p>
-          <h2 className="text-[20px] font-semibold mt-2">为什么选择Nano Banana?</h2>
-          <p className="text-[12px] text-[#8a8a8a] mt-1">从一致性角色编辑到场景保留，打造可靠且易用的 AI 编辑体验</p>
+          <p className="text-[12px] font-semibold tracking-[2px] text-[#f29b1d] uppercase">核心功能</p>
+          <h2 className="mt-3 text-[32px] font-extrabold text-[#1f2937]">为什么选择Nano Banana?</h2>
+          <p className="mt-3 text-[14px] leading-6 text-[#6b7280]">
+            Nano Banana 是 LMArena 上最先进的 AI 图像编辑器。用自然语言理解彻底改变您的照片编辑方式。
+          </p>
 
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            {Array.from({length:4}).map((_,i)=> (
-              <div key={i} className="card-soft p-4 text-left">
-                <div className="text-[20px] mb-2">🍋</div>
-                <h3 className="font-semibold mb-1">优势点 {i+1}</h3>
-                <p className="text-[12px] text-[#777]">简短描述，解释该优势如何提升编辑质量与效率。</p>
+          <div className="mt-12 grid gap-5 lg:grid-cols-3">
+            {[
+              {
+                icon: '💡',
+                title: '自然语言编辑',
+                copy: '简单提示即可编辑图像，Nano Banana AI 像图像版 GPT 一样理解复杂指令。',
+              },
+              {
+                icon: '🧩',
+                title: '角色一致性',
+                copy: '在编辑全程保持角色特征与服装细节，连贯故事无需后期修补。',
+              },
+              {
+                icon: '🌆',
+                title: '场景保留',
+                copy: '无缝融合编辑内容与原始背景，场景过渡能力领先 Flux Kontext。',
+              },
+              {
+                icon: '⚙️',
+                title: '一键编辑',
+                copy: '一次尝试就能获得理想效果，快速完成批量修图工作。',
+              },
+              {
+                icon: '📚',
+                title: '多图上下文',
+                copy: '一次处理多张图像，支持复杂的多层次编辑流程。',
+              },
+              {
+                icon: '🎯',
+                title: 'AI UGC 创作',
+                copy: '打造一致的 AI 影响者与 UGC 内容，适配社交媒体与营销活动。',
+              },
+            ].map((feature, index) => (
+              <div
+                key={index}
+                className="rounded-[28px] border border-[#fbeaca] bg-gradient-to-b from-[#fffcf5] via-[#fff8ea] to-[#fff3e4] p-6 text-left shadow-soft"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#ffcc75] text-[18px] text-white shadow-soft">
+                  {feature.icon}
+                </div>
+                <h3 className="mt-4 text-[16px] font-semibold text-[#1f2937]">{feature.title}</h3>
+                <p className="mt-2 text-[13px] leading-6 text-[#6b7280]">{feature.copy}</p>
               </div>
             ))}
           </div>
