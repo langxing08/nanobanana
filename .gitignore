@@ -1,0 +1,13 @@
+# macOS cruft
+.DS_Store
+
+# Node / Next.js artifacts
+node_modules/
+.next/
+out/
+.turbo/
+
+# Local tooling
+tmp/
+tmp_dev_pid
+tmp_dev_pid/

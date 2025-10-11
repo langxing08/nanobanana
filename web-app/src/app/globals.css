@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+html, body { height: 100%; }
+body { @apply font-ui text-[#111827] bg-white; }
+
+/* utility to replicate the yellow capsule border */
+.capsule { @apply rounded-pill border border-banana-300 bg-white shadow-soft; }
+.capsule-yellow { @apply rounded-pill border border-banana-200 bg-banana-50 shadow-soft text-[#7a5600]; }
+
+.section { @apply w-full flex justify-center; }
+.section-inner { @apply w-full max-w-page px-4; }
+
+/* soft card */
+/* Tailwind 不支持在 @apply 中使用复杂的 CSS 变量类，直接落地为具体色值以确保构建通过 */
+.card { @apply rounded-2xl border border-[#ece7d8] bg-white shadow-soft; }
+.card-soft { @apply rounded-2xl border border-[#f0ead9] bg-gradient-to-b from-white to-[#fffdf6] shadow-soft; }
+
+/* mock panel backgrounds */
+.panel-yellow { @apply bg-banana-50 border border-banana-100; }
