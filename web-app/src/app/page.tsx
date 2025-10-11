@@ -1,52 +1,50 @@
 export default function Page() {
   return (
     <main className="w-full">
-      {/* 顶部导航 */}
-      <div className="section border-b border-[#efe9d8]">
-        <div className="section-inner h-[56px] flex items-center justify-between text-[12px] text-[#7a7a7a]">
-          <div className="flex items-center gap-2">
-            <div className="w-[18px] h-[18px] rounded-full bg-banana-300 shadow-inner" />
-            <span>Nano Banana</span>
-            <span>·</span>
-            <span>首页</span>
-          </div>
-          <div className="flex items-center gap-3 text-[11px]">
-            <a className="capsule-yellow px-3 py-1" href="#">登录</a>
-            <a className="capsule-yellow px-3 py-1" href="#">免费试用</a>
-          </div>
-        </div>
-      </div>
-
-      {/* 顶部英文提示胶囊 */}
-      <div className="section mt-3">
-        <div className="section-inner">
-          <div className="capsule-yellow px-4 py-2 text-[14px] text-[#7c5b00] w-fit mx-auto">
-            Nanobanana.ai is an independent product and is not affiliate with Google or any of its brands
-          </div>
-        </div>
-      </div>
-
-      {/* 品牌与 Hero */}
-      <section className="section mt-12">
+      {/* 首屏品牌 Hero */}
+      <section className="section pt-20 pb-16">
         <div className="section-inner text-center">
-          <div className="inline-flex items-center gap-2 capsule px-4 py-2 text-[12px] text-[#7a5600]">
-            <span>✦</span>
+          <div className="inline-flex items-center gap-2 rounded-pill border border-banana-200 bg-banana-50 px-6 py-2 text-[14px] text-banana-600 shadow-soft">
+            <span className="text-[18px]">🍌</span>
             <span>超越 Flux Kontext 的 AI 模型</span>
+            <a className="ml-2 font-semibold text-banana-600 hover:text-banana-500 transition-colors" href="#">
+              立即试用 →
+            </a>
           </div>
-          <h1 className="mt-6 text-[44px] font-extrabold text-[#e9a604] tracking-[0.8px]">Nano Banana</h1>
-          <p className="mt-2 text-[13px] text-[#6f6f6f] leading-6">
+          <h1 className="mt-10 text-[60px] font-extrabold text-banana-500 tracking-[1px]">Nano Banana</h1>
+          <p className="mt-4 text-[16px] leading-8 text-[#485268]">
             用简单的文字提示变换任何图像。Nano Banana的先进模型提供超越 Flux Kontext 的一致性角色编辑和场景保留。体验 AI 图像编辑的未来。
           </p>
 
-          <div className="mt-4 flex items-center justify-center gap-3">
-            <a className="rounded-pill bg-banana-300 text-ink h-[36px] px-4 font-semibold shadow-soft border border-transparent" href="#">立即使用</a>
-            <a className="rounded-pill border border-banana-300 h-[36px] px-4 text-[#7a5600] bg-white" href="#">查看示例</a>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <a
+              className="inline-flex items-center gap-2 rounded-pill bg-banana-400 px-8 py-3 text-[16px] font-semibold text-white shadow-soft hover:bg-banana-500 transition-colors"
+              href="#"
+            >
+              开始编辑
+              <span className="text-[18px]">🍌</span>
+            </a>
+            <a
+              className="inline-flex items-center justify-center rounded-pill border border-banana-300 bg-white px-8 py-3 text-[16px] font-semibold text-banana-600 shadow-soft hover:border-banana-400 hover:text-banana-500 transition-colors"
+              href="#"
+            >
+              查看示例
+            </a>
           </div>
 
-          <div className="mt-3 text-[12px] text-[#9c9c9c] flex items-center justify-center gap-5">
-            <span>🙂 轻量</span>
-            <span>⚡ 不卡顿</span>
-            <span>🔒 更安全</span>
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-[13px] text-[#4b5563]">
+            <div className="flex items-center gap-2">
+              <span className="text-[20px]">🛠️</span>
+              <span>一键编辑</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[20px]">🔁</span>
+              <span>多图支持</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[20px]">🗣️</span>
+              <span>自然语言</span>
+            </div>
           </div>
         </div>
       </section>
