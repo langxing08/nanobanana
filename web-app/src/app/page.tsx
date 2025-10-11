@@ -1,4 +1,15 @@
+'use client';
+
+import { useState } from 'react';
+
 export default function Page() {
+  type EditorTab = 'image' | 'text';
+  const [activeTab, setActiveTab] = useState<EditorTab>('image');
+  const tabs: { id: EditorTab; label: string; icon: string }[] = [
+    { id: 'image', label: '图生图', icon: '🖼️' },
+    { id: 'text', label: '文生图', icon: '📝' },
+  ];
+
   return (
     <main className="w-full">
       {/* 首屏品牌 Hero */}
@@ -49,50 +60,164 @@ export default function Page() {
         </div>
       </section>
 
-      {/* 试用编辑器 区域标题 */}
+      {/* 试用 AI 编辑器 */}
       <section className="section mt-16">
         <div className="section-inner">
           <div className="text-center">
-            <p className="text-[12px] text-banana-500 font-bold">开始使用</p>
-            <h2 className="text-[22px] font-semibold mt-2">试用 AI 编辑器</h2>
-            <p className="text-[12px] text-[#8a8a8a] mt-1">体验自然语言图像编辑能力。用简单的文字命令变换任何图片。</p>
+            <p className="text-[12px] font-bold text-banana-500">开始使用</p>
+            <h2 className="mt-2 text-[28px] font-semibold tracking-[0.5px]">试用 AI 编辑器</h2>
+            <p className="mt-2 text-[12px] text-[#8a8a8a]">体验 Nano Banana 的自然语言图像编辑能力，用简单的文字命令变换任何图片。</p>
           </div>
-        </div>
-      </section>
 
-      {/* 编辑器卡片（静态 mock） */}
-      <section className="section mt-6">
-        <div className="section-inner">
-          <div className="card p-3">
-            <div className="panel-yellow rounded-xl p-2 text-[12px] text-[#7a5600] font-semibold flex items-center">
-              <div className="w-full bg-banana-100 rounded-full h-[18px] relative">
-                <div className="absolute left-0 top-0 h-full bg-banana-300 rounded-full" style={{width:'68%'}} />
-              </div>
-              <div className="ml-2">67.9%</div>
-              <button className="ml-auto text-xs capsule-yellow px-3 py-1">保存</button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 mt-3">
-              <div className="card-soft p-3">
-                <p className="text-[12px] text-[#7a7a7a] mb-2">上传图片</p>
-                <div className="border border-[#f0ead9] rounded-xl h-[220px] grid place-items-center text-[#b6b6b6]">
-                  <div className="text-center text-[12px]">
-                    <div className="text-[20px]">🖼️</div>
-                    <div>点击上传</div>
-                  </div>
+          <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+            <div className="rounded-[30px] border border-[#f6e8c9] bg-gradient-to-br from-[#fffef9] via-[#fff9e7] to-[#fff4d8] p-6 shadow-soft">
+              <div className="flex items-start gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-banana-300 text-lg text-white">✏️</div>
+                <div>
+                  <div className="text-[14px] font-semibold text-[#a67200]">提示引擎</div>
+                  <p className="mt-1 text-[12px] text-[#ba8600]">
+                    {activeTab === 'image' ? '用 AI 技术编辑变换您的图像' : '描述您的愿景，瞬间变为现实'}
+                  </p>
                 </div>
               </div>
-              <div className="card-soft p-3">
-                <p className="text-[12px] text-[#7a7a7a] mb-2">编辑指令</p>
-                <textarea className="w-full h-[220px] rounded-xl border border-[#f0ead9] p-3 outline-none" placeholder="例如：把人物换到海边，保持服装风格一致" />
+
+              <div className="mt-5 flex items-center gap-2 rounded-full border border-[#fce6af] bg-white/80 p-1">
+                {tabs.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex-1 rounded-full px-4 py-2 text-[12px] font-semibold transition-colors duration-200 flex items-center justify-center gap-1 ${
+                        isActive
+                          ? 'bg-gradient-to-r from-[#ffc76b] via-[#ffb447] to-[#ff9c35] text-white shadow-soft'
+                          : 'text-[#caa24a] hover:text-[#a47c1b]'
+                      }`}
+                    >
+                      <span className="text-[14px]">{tab.icon}</span>
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
               </div>
+
+              <div className="mt-5">
+                {activeTab === 'image' ? (
+                  <>
+                    <div className="rounded-2xl border border-[#f7e3b6] bg-[#fff6e3] p-3">
+                      <div className="flex items-center gap-2 text-[12px] text-[#c08c1c]">
+                        <span className="rounded-pill bg-banana-400 px-2 py-0.5 text-[10px] font-semibold uppercase text-white">Pro</span>
+                        <span className="font-semibold">批量生成</span>
+                        <span className="text-[#d0aa58]">可同时运行多个任务，生成多张输出图片</span>
+                      </div>
+                      <button className="ml-auto mt-3 inline-flex items-center gap-1 rounded-full border border-[#f7d58f] px-3 py-1 text-[11px] font-semibold text-[#b27c05] transition-colors hover:text-[#8f6100]">
+                        升级
+                        <span className="text-[13px]">⚡</span>
+                      </button>
+                    </div>
+
+                    <div className="mt-5 space-y-5 text-[12px] text-[#a37b16]">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 font-semibold">
+                            <span className="text-[16px]">🖼️</span>
+                            <span>参考图像</span>
+                          </div>
+                          <span className="text-[#caa24a]">0/9</span>
+                        </div>
+                        <div className="mt-2 grid h-[140px] place-items-center rounded-2xl border border-dashed border-[#f3d69c] bg-[#fffcf3] text-[#d0b367]">
+                          <div className="text-center">
+                            <div className="text-[20px]">＋</div>
+                            <div>添加图片</div>
+                            <div className="text-[10px] text-[#daba6f]">最大 50MB</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="flex items-center gap-2 font-semibold">
+                          <span className="text-[16px]">💡</span>
+                          <span>主提示词</span>
+                        </div>
+                        <textarea
+                          className="mt-2 h-[120px] w-full rounded-2xl border border-[#f3d69c] bg-white/70 p-4 text-[12px] text-[#8c6a0a] outline-none transition-shadow focus:shadow-[0_0_0_3px_rgba(253,223,162,0.45)]"
+                          placeholder="输入详细提示词，如：黄昏的城市街头，保持角色服装与参考图一致"
+                        />
+                        <div className="mt-2 flex items-center justify-between text-[11px] text-[#caa24a]">
+                          <button className="inline-flex items-center gap-1 rounded-full border border-[#f3d69c] px-3 py-1 text-[#b98700] transition-colors hover:text-[#8f6100]">
+                            复制
+                            <span className="text-[13px]">⎘</span>
+                          </button>
+                          <span>支持中英文混合指令</span>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="rounded-2xl border border-[#f4dfb3] bg-white/75 p-4 text-[#b88a17]">
+                      <div className="flex items-center gap-2 text-[12px] font-semibold text-[#a37200]">
+                        <span className="text-[16px]">✨</span>
+                        <span>主提示词构思助手</span>
+                      </div>
+                      <p className="mt-2 text-[12px] text-[#caa24a]">填写场景、角色、光线与风格描述，Nano Banana 即可生成全新画面。</p>
+                    </div>
+
+                    <div className="mt-5 text-[12px] text-[#a37b16]">
+                      <div className="flex items-center gap-2 font-semibold">
+                        <span className="text-[16px]">💡</span>
+                        <span>主提示词</span>
+                      </div>
+                      <textarea
+                        className="mt-2 h-[160px] w-full rounded-2xl border border-[#f3d69c] bg-white/85 p-4 text-[12px] text-[#8c6a0a] outline-none transition-shadow focus:shadow-[0_0_0_3px_rgba(253,223,162,0.45)]"
+                        placeholder="例如：由纳米技术驱动的未来城市，黄金时段照明，超高清细节，富有电影感..."
+                      />
+                      <div className="mt-2 flex items-center justify-between text-[11px] text-[#caa24a]">
+                        <button className="inline-flex items-center gap-1 rounded-full border border-[#f3d69c] px-3 py-1 text-[#b98700] transition-colors hover:text-[#8f6100]">
+                          复制
+                          <span className="text-[13px]">⎘</span>
+                        </button>
+                        <span>可用逗号分隔场景、角色与风格</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 grid gap-2 rounded-2xl border border-dashed border-[#f7e5bc] bg-[#fffaf0] p-4 text-[11px] text-[#caa24a]">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[14px]">🎨</span>
+                        <span>提示结构建议：主题 + 环境 + 风格 + 光线</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[14px]">⏱️</span>
+                        <span>
+                          平均生成时间 <span className="font-semibold text-[#a67200]">≈ 5 秒</span>
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <button className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#ffc76b] via-[#ffb447] to-[#ff9c35] px-5 py-4 text-[14px] font-semibold text-white shadow-soft transition-transform hover:scale-[1.01]">
+                ⚡ 立即生成
+              </button>
             </div>
 
-            <div className="mt-3 h-[280px] border border-[#f0ead9] rounded-xl grid place-items-center text-[#a0a0a0] bg-[#fcfcfc]">
-              <div className="text-center text-[12px]">
-                <div className="text-[22px]">🖼️</div>
-                <div>生成效果预览</div>
-                <div className="text-[#c0c0c0]">拖入图片以开始</div>
+            <div className="flex flex-col rounded-[30px] border border-[#f6e8c9] bg-gradient-to-b from-white to-[#fff9ed] p-6 shadow-soft">
+              <div className="flex items-start gap-3">
+                <div>
+                  <div className="text-[14px] font-semibold text-[#a67200]">输出画廊</div>
+                  <p className="mt-1 text-[12px] text-[#ba8600]">您的创作将即时显示在这里</p>
+                </div>
+              </div>
+              <div className="mt-5 flex-1 rounded-[26px] border border-dashed border-[#f3d69c] bg-[#fffcf3] p-10 text-center text-[12px] text-[#caa24a]">
+                <div className="mx-auto flex h-full max-w-[240px] flex-col items-center justify-center gap-3">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#f3d69c] bg-white text-[26px] text-[#d2ad55]">
+                    🖼️
+                  </div>
+                  <div className="font-semibold text-[#a67200]">准备即时生成</div>
+                  <p className="text-[#caa24a]">输入提示词，释放强大力量</p>
+                </div>
               </div>
             </div>
           </div>
