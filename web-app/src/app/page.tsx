@@ -139,26 +139,33 @@ export default function Page() {
   };
 
   const handleGenerate = async () => {
-    if (activeTab !== 'image') {
-      return;
-    }
-    if (!imageFile) {
-      setErrorMessage('请先上传参考图像 / Please upload a reference image first.');
-      return;
-    }
+    const isTextMode = activeTab === 'text';
+
     if (!prompt.trim()) {
       setErrorMessage('请填写主提示词 / Please enter the main prompt.');
       return;
     }
 
+    if (!isTextMode && !imageFile) {
+      setErrorMessage('请先上传参考图像 / Please upload a reference image first.');
+      return;
+    }
+
     setIsGenerating(true);
     setErrorMessage(null);
-    setStatusMessage('正在调用 Gemini 2.5 Flash Image · Contacting Gemini 2.5 Flash Image...');
+    setStatusMessage(
+      isTextMode
+        ? '正在调用 Gemini 2.5 Flash Image 文生图 · Contacting Gemini 2.5 Flash Image (text-to-image)...'
+        : '正在调用 Gemini 2.5 Flash Image 图生图 · Contacting Gemini 2.5 Flash Image (image-to-image)...',
+    );
 
     try {
       const formData = new FormData();
       formData.append('prompt', prompt.trim());
-      formData.append('image', imageFile);
+      formData.append('mode', isTextMode ? 'text' : 'image');
+      if (!isTextMode && imageFile) {
+        formData.append('image', imageFile);
+      }
 
       const response = await fetch('/api/generate-image', {
         method: 'POST',
@@ -411,6 +418,8 @@ export default function Page() {
                       <textarea
                         className="mt-2 h-[160px] w-full rounded-2xl border border-[#f3d69c] bg-white/85 p-4 text-[12px] text-[#8c6a0a] outline-none transition-shadow focus:shadow-[0_0_0_3px_rgba(253,223,162,0.45)]"
                         placeholder="例如：由纳米技术驱动的未来城市，黄金时段照明，超高清细节，富有电影感..."
+                        value={prompt}
+                        onChange={(event) => setPrompt(event.target.value)}
                       />
                       <div className="mt-2 flex items-center justify-between text-[11px] text-[#caa24a]">
                         <button className="inline-flex items-center gap-1 rounded-full border border-[#f3d69c] px-3 py-1 text-[#b98700] transition-colors hover:text-[#8f6100]">

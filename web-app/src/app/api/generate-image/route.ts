@@ -19,7 +19,10 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const prompt = formData.get('prompt');
-    const image = formData.get('image');
+    const mode = formData.get('mode');
+    const isTextMode = mode === 'text';
+    const imageEntry = formData.get('image');
+    const image = imageEntry instanceof File ? imageEntry : null;
 
     if (typeof prompt !== 'string' || !prompt.trim()) {
       return NextResponse.json(
@@ -28,24 +31,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!(image instanceof File)) {
+    if (!isTextMode && !image) {
       return NextResponse.json(
         { error: '请上传参考图像 / Please upload a reference image.' },
         { status: 400 },
       );
     }
 
-    if (image.size > MAX_FILE_SIZE) {
+    if (image && image.size > MAX_FILE_SIZE) {
       return NextResponse.json(
         { error: '图片大小需小于 50MB / The reference image must be smaller than 50MB.' },
         { status: 400 },
       );
     }
 
-    const arrayBuffer = await image.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString('base64');
-    const mimeType = image.type || 'image/png';
-    const dataUrl = `data:${mimeType};base64,${base64}`;
+    let dataUrl: string | null = null;
+    if (image) {
+      const arrayBuffer = await image.arrayBuffer();
+      const base64 = Buffer.from(arrayBuffer).toString('base64');
+      const mimeType = image.type || 'image/png';
+      dataUrl = `data:${mimeType};base64,${base64}`;
+    }
 
     const response = await fetch(OPENROUTER_ENDPOINT, {
       method: 'POST',
@@ -66,12 +72,16 @@ export async function POST(request: NextRequest) {
                 type: 'text',
                 text: prompt.trim(),
               },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: dataUrl,
-                },
-              },
+              ...(dataUrl
+                ? [
+                    {
+                      type: 'image_url',
+                      image_url: {
+                        url: dataUrl,
+                      },
+                    },
+                  ]
+                : []),
             ],
           },
         ],
