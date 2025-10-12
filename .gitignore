@@ -7,6 +7,16 @@ node_modules/
 out/
 .turbo/
 
+# Environment secrets
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+web-app/.env.local
+web-app/.env.development.local
+web-app/.env.test.local
+web-app/.env.production.local
+
 # Local tooling
 tmp/
 tmp_dev_pid

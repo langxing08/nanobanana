@@ -1,15 +1,35 @@
 'use client';
 
-import { useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 
 export default function Page() {
   type EditorTab = 'image' | 'text';
   const [activeTab, setActiveTab] = useState<EditorTab>('image');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [prompt, setPrompt] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [gallery, setGallery] = useState<string[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const tabs: { id: EditorTab; label: string; icon: string }[] = [
     { id: 'image', label: '图生图', icon: '🖼️' },
     { id: 'text', label: '文生图', icon: '📝' },
   ];
+  useEffect(() => {
+    if (!imageFile) {
+      setImagePreview(null);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(imageFile);
+    setImagePreview(objectUrl);
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [imageFile]);
   const showcases = [
     {
       title: '超快速山景生成',
@@ -88,6 +108,96 @@ export default function Page() {
       answerEn: 'Sign in to the Nano Banana console to access your trial credits and explore the full workflow.',
     },
   ];
+  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
+  const handleAddImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageSelection = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      setErrorMessage('请上传 50MB 以内的图片 / Please upload an image under 50MB.');
+      event.target.value = '';
+      return;
+    }
+
+    setImageFile(file);
+    setErrorMessage(null);
+    setStatusMessage(null);
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (activeTab !== 'image') {
+      return;
+    }
+    if (!imageFile) {
+      setErrorMessage('请先上传参考图像 / Please upload a reference image first.');
+      return;
+    }
+    if (!prompt.trim()) {
+      setErrorMessage('请填写主提示词 / Please enter the main prompt.');
+      return;
+    }
+
+    setIsGenerating(true);
+    setErrorMessage(null);
+    setStatusMessage('正在调用 Gemini 2.5 Flash Image · Contacting Gemini 2.5 Flash Image...');
+
+    try {
+      const formData = new FormData();
+      formData.append('prompt', prompt.trim());
+      formData.append('image', imageFile);
+
+      const response = await fetch('/api/generate-image', {
+        method: 'POST',
+        body: formData,
+      });
+      const responseText = await response.text();
+
+      let payload: { images?: unknown; error?: string } | null = null;
+      try {
+        payload = JSON.parse(responseText);
+      } catch {
+        throw new Error('无法解析模型返回结果 / Unable to parse the model response.');
+      }
+
+      if (!response.ok) {
+        throw new Error(payload?.error ?? '生成失败，请稍后重试 / Generation failed, please try again.');
+      }
+
+      const images = Array.isArray(payload?.images)
+        ? payload.images.filter((item): item is string => typeof item === 'string')
+        : [];
+
+      if (!images.length) {
+        throw new Error('API 未返回图像，请重试 / The API did not return any images. Please try again.');
+      }
+
+      setGallery((previous) => [...images, ...previous]);
+      setStatusMessage('生成完成 · Images ready!');
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : '生成失败，请稍后重试 / Generation failed, please try again.';
+      setErrorMessage(message);
+      setStatusMessage(null);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <main className="w-full">
@@ -203,14 +313,51 @@ export default function Page() {
                             <span className="text-[16px]">🖼️</span>
                             <span>参考图像</span>
                           </div>
-                          <span className="text-[#caa24a]">0/9</span>
+                          <span className="text-[#caa24a]">{imageFile ? '1/9' : '0/9'}</span>
                         </div>
-                        <div className="mt-2 grid h-[140px] place-items-center rounded-2xl border border-dashed border-[#f3d69c] bg-[#fffcf3] text-[#d0b367]">
-                          <div className="text-center">
-                            <div className="text-[20px]">＋</div>
-                            <div>添加图片</div>
-                            <div className="text-[10px] text-[#daba6f]">最大 50MB</div>
+                        <div className="mt-2">
+                          <div className="relative h-[140px] w-full overflow-hidden rounded-2xl border border-dashed border-[#f3d69c] bg-[#fffcf3] text-[#d0b367]">
+                            {imagePreview ? (
+                              <>
+                                <img
+                                  src={imagePreview}
+                                  alt="参考图像预览 / Reference preview"
+                                  className="h-full w-full object-cover"
+                                />
+                                <div className="absolute inset-x-3 bottom-3 flex flex-col gap-2 text-[11px] text-white">
+                                  <span className="truncate rounded-full bg-black/40 px-3 py-1 backdrop-blur-sm">
+                                    {imageFile?.name ?? '已选择图片 / Selected image'}
+                                  </span>
+                                  <div className="flex justify-end">
+                                    <button
+                                      type="button"
+                                      onClick={handleRemoveImage}
+                                      className="rounded-full bg-white/80 px-3 py-1 text-[11px] font-semibold text-[#a15d00] transition-colors hover:bg-white"
+                                    >
+                                      移除 / Remove
+                                    </button>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={handleAddImageClick}
+                                className="absolute inset-0 flex h-full w-full flex-col items-center justify-center text-[#d0b367] transition-colors hover:text-[#b68d2c]"
+                              >
+                                <div className="text-[20px]">＋</div>
+                                <div>添加图片</div>
+                                <div className="text-[10px] text-[#daba6f]">最大 50MB</div>
+                              </button>
+                            )}
                           </div>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageSelection}
+                            className="hidden"
+                          />
                         </div>
                       </div>
 
@@ -221,6 +368,8 @@ export default function Page() {
                         </div>
                         <textarea
                           className="mt-2 h-[120px] w-full rounded-2xl border border-[#f3d69c] bg-white/70 p-4 text-[12px] text-[#8c6a0a] outline-none transition-shadow focus:shadow-[0_0_0_3px_rgba(253,223,162,0.45)]"
+                          value={prompt}
+                          onChange={(event) => setPrompt(event.target.value)}
                           placeholder="输入详细提示词，如：黄昏的城市街头，保持角色服装与参考图一致"
                         />
                         <div className="mt-2 flex items-center justify-between text-[11px] text-[#caa24a]">
@@ -232,6 +381,17 @@ export default function Page() {
                         </div>
                       </div>
                     </div>
+                    {(errorMessage || statusMessage) && (
+                      <div
+                        className={`mt-4 rounded-2xl border px-4 py-3 text-[11px] ${
+                          errorMessage
+                            ? 'border-red-200 bg-red-50/80 text-[#b54747]'
+                            : 'border-[#f3d69c] bg-white/70 text-[#a67200]'
+                        }`}
+                      >
+                        {errorMessage ?? statusMessage}
+                      </div>
+                    )}
                   </>
                 ) : (
                   <>
@@ -277,8 +437,25 @@ export default function Page() {
                 )}
               </div>
 
-              <button className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#ffc76b] via-[#ffb447] to-[#ff9c35] px-5 py-4 text-[14px] font-semibold text-white shadow-soft transition-transform hover:scale-[1.01]">
-                ⚡ 立即生成
+              <button
+                type="button"
+                onClick={handleGenerate}
+                disabled={isGenerating}
+                className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#ffc76b] via-[#ffb447] to-[#ff9c35] px-5 py-4 text-[14px] font-semibold text-white shadow-soft transition-transform hover:scale-[1.01] ${
+                  isGenerating ? 'cursor-not-allowed opacity-70 hover:scale-100' : ''
+                }`}
+              >
+                {isGenerating ? (
+                  <>
+                    <span className="text-[16px]">⏳</span>
+                    <span>生成中 · Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-[16px]">⚡</span>
+                    <span>立即生成</span>
+                  </>
+                )}
               </button>
             </div>
 
@@ -289,14 +466,40 @@ export default function Page() {
                   <p className="mt-1 text-[12px] text-[#ba8600]">您的创作将即时显示在这里</p>
                 </div>
               </div>
-              <div className="mt-5 flex-1 rounded-[26px] border border-dashed border-[#f3d69c] bg-[#fffcf3] p-10 text-center text-[12px] text-[#caa24a]">
-                <div className="mx-auto flex h-full max-w-[240px] flex-col items-center justify-center gap-3">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#f3d69c] bg-white text-[26px] text-[#d2ad55]">
-                    🖼️
+              <div className="mt-5 flex-1">
+                {gallery.length ? (
+                  <div className="grid gap-4 rounded-[26px] border border-[#f3d69c] bg-white/80 p-4 text-[12px] text-[#a67200] sm:grid-cols-2">
+                    {gallery.map((url, index) => (
+                      <div
+                        key={`${url}-${index}`}
+                        className="group relative overflow-hidden rounded-2xl border border-[#f3d69c]/70 bg-white shadow-soft transition-transform hover:-translate-y-[2px]"
+                      >
+                        <img src={url} alt={`生成图像 ${index + 1}`} className="h-full w-full object-cover" />
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                        <div className="absolute inset-x-3 bottom-3 flex items-center justify-between text-[10px] text-white/90">
+                          <span className="rounded-full bg-black/40 px-2 py-1 backdrop-blur-sm">#{index + 1}</span>
+                          <a
+                            href={url}
+                            download={`nano-banana-${index + 1}.png`}
+                            className="pointer-events-auto rounded-full bg-white/80 px-3 py-1 font-semibold text-[#a06200] transition-colors hover:bg-white"
+                          >
+                            下载 / Download
+                          </a>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="font-semibold text-[#a67200]">准备即时生成</div>
-                  <p className="text-[#caa24a]">输入提示词，释放强大力量</p>
-                </div>
+                ) : (
+                  <div className="rounded-[26px] border border-dashed border-[#f3d69c] bg-[#fffcf3] p-10 text-center text-[12px] text-[#caa24a]">
+                    <div className="mx-auto flex h-full max-w-[240px] flex-col items-center justify-center gap-3">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#f3d69c] bg-white text-[26px] text-[#d2ad55]">
+                        🖼️
+                      </div>
+                      <div className="font-semibold text-[#a67200]">准备即时生成</div>
+                      <p className="text-[#caa24a]">输入提示词，释放强大力量</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
