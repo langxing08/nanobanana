@@ -5,6 +5,7 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
   'github-signin-failed': 'GitHub 登录失败，请稍后重试 · GitHub sign-in failed, please try again.',
+  'google-signin-failed': 'Google 登录失败，请稍后重试 · Google sign-in failed, please try again.',
   'exchange-failed': '无法创建登录会话，请重新尝试 · Unable to create a login session, please try again.',
   missing_code: '缺少授权代码，无法完成登录 · Missing authorization code, unable to finish sign-in.',
 };
@@ -206,10 +207,10 @@ export default function Page() {
   ];
   const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
-  const handleGitHubLogin = () => {
+  const handleOAuthSignIn = (provider: 'github' | 'google') => {
     setAuthError(null);
     setAuthFeedback(null);
-    window.location.href = '/auth/github';
+    window.location.href = `/auth/${provider}`;
   };
 
   const handleSignOut = async () => {
@@ -376,7 +377,7 @@ export default function Page() {
                 <div className="flex items-center gap-3">
                   {avatarUrl ? (
                     <img
-                      alt="GitHub avatar"
+                      alt="用户头像 · User avatar"
                       src={avatarUrl}
                       className="h-10 w-10 rounded-full border border-banana-200 bg-white object-cover"
                       referrerPolicy="no-referrer"
@@ -402,14 +403,24 @@ export default function Page() {
                   </button>
                 </div>
               ) : (
-                <button
-                  className="inline-flex items-center gap-2 rounded-pill bg-[#111827] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#060913]"
-                  onClick={handleGitHubLogin}
-                  type="button"
-                >
-                  <span className="text-lg">🐙</span>
-                  <span>使用 GitHub 登录 · Sign in with GitHub</span>
-                </button>
+                <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+                  <button
+                    className="inline-flex items-center gap-2 rounded-pill bg-[#111827] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#060913]"
+                    onClick={() => handleOAuthSignIn('github')}
+                    type="button"
+                  >
+                    <span className="text-lg">🐙</span>
+                    <span>使用 GitHub 登录 · Sign in with GitHub</span>
+                  </button>
+                  <button
+                    className="inline-flex items-center gap-2 rounded-pill border border-[#d1d5db] bg-white px-5 py-2 text-sm font-semibold text-[#111827] transition hover:border-[#111827]/60 hover:text-[#111827]"
+                    onClick={() => handleOAuthSignIn('google')}
+                    type="button"
+                  >
+                    <span className="text-lg">🟢</span>
+                    <span>使用 Google 登录 · Sign in with Google</span>
+                  </button>
+                </div>
               )}
             </div>
           </div>
