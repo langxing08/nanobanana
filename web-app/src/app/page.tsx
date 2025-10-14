@@ -1,6 +1,15 @@
 'use client';
 
+import type { User } from '@supabase/supabase-js';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
+
+const AUTH_ERROR_MESSAGES: Record<string, string> = {
+  'github-signin-failed': 'GitHub 登录失败，请稍后重试 · GitHub sign-in failed, please try again.',
+  'exchange-failed': '无法创建登录会话，请重新尝试 · Unable to create a login session, please try again.',
+  missing_code: '缺少授权代码，无法完成登录 · Missing authorization code, unable to finish sign-in.',
+};
+
+const AUTH_STATUS_ERROR = '无法获取登录状态，请重试 · Unable to check your sign-in status. Please try again.';
 
 export default function Page() {
   type EditorTab = 'image' | 'text';
@@ -13,11 +22,98 @@ export default function Page() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [authUser, setAuthUser] = useState<User | null>(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [authFeedback, setAuthFeedback] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const tabs: { id: EditorTab; label: string; icon: string }[] = [
     { id: 'image', label: '图生图', icon: '🖼️' },
     { id: 'text', label: '文生图', icon: '📝' },
   ];
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchSession = async () => {
+      setAuthError(null);
+      setAuthFeedback(null);
+
+      try {
+        const response = await fetch('/api/auth/session', {
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            if (isMounted) {
+              setAuthUser(null);
+            }
+            return;
+          }
+
+          const payload = await response.json().catch(() => null);
+
+          if (isMounted) {
+            setAuthError(
+              typeof payload?.error === 'string' ? payload.error : AUTH_STATUS_ERROR,
+            );
+          }
+          return;
+        }
+
+        const payload = (await response.json()) as { user?: User | null };
+
+        if (isMounted) {
+          setAuthUser(payload?.user ?? null);
+        }
+      } catch {
+        if (isMounted) {
+          setAuthError(AUTH_STATUS_ERROR);
+        }
+      } finally {
+        if (isMounted) {
+          setIsCheckingAuth(false);
+        }
+      }
+    };
+
+    fetchSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const errorCode = params.get('authError');
+    const rawMessage = params.get('authMessage');
+
+    if (!errorCode && !rawMessage) {
+      return;
+    }
+
+    const message =
+      (errorCode && AUTH_ERROR_MESSAGES[errorCode]) ??
+      rawMessage ??
+      AUTH_ERROR_MESSAGES['github-signin-failed'];
+
+    setAuthError(message);
+
+    params.delete('authError');
+    params.delete('authMessage');
+
+    const nextSearch = params.toString();
+    const nextUrl = `${window.location.pathname}${
+      nextSearch ? `?${nextSearch}` : ''
+    }${window.location.hash}`;
+
+    window.history.replaceState(null, '', nextUrl);
+  }, []);
   useEffect(() => {
     if (!imageFile) {
       setImagePreview(null);
@@ -109,6 +205,44 @@ export default function Page() {
     },
   ];
   const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
+  const handleGitHubLogin = () => {
+    setAuthError(null);
+    setAuthFeedback(null);
+    window.location.href = '/auth/github';
+  };
+
+  const handleSignOut = async () => {
+    setAuthError(null);
+    setAuthFeedback(null);
+    setIsSigningOut(true);
+
+    try {
+      const response = await fetch('/api/auth/sign-out', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        const message =
+          typeof payload?.error === 'string'
+            ? payload.error
+            : '退出失败，请稍后重试 · Sign-out failed, please try again.';
+        throw new Error(message);
+      }
+
+      setAuthUser(null);
+      setAuthFeedback('退出成功，稍后可再次登录 · Signed out successfully, sign in again anytime.');
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : '退出失败，请稍后重试 · Sign-out failed, please try again.';
+      setAuthError(message);
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
 
   const handleAddImageClick = () => {
     fileInputRef.current?.click();
@@ -206,8 +340,97 @@ export default function Page() {
     }
   };
 
+  const avatarUrl =
+    authUser?.user_metadata && typeof authUser.user_metadata?.avatar_url === 'string'
+      ? (authUser.user_metadata.avatar_url as string)
+      : undefined;
+
+  const displayName =
+    (authUser?.user_metadata && typeof authUser.user_metadata?.full_name === 'string'
+      ? authUser.user_metadata.full_name
+      : typeof authUser?.user_metadata?.user_name === 'string'
+        ? authUser.user_metadata.user_name
+        : authUser?.email) ?? '';
+
+  const displayInitial = displayName ? displayName.charAt(0).toUpperCase() : 'G';
+
   return (
-    <main className="w-full">
+    <>
+      <section className="section pt-6">
+        <div className="section-inner">
+          <div className="flex flex-col gap-3 rounded-2xl border border-banana-200 bg-white/80 p-4 text-[#111827] shadow-soft backdrop-blur supports-[backdrop-filter]:bg-white/60 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold">
+                连接 GitHub 解锁云端保存 · Link GitHub to unlock cloud saves
+              </p>
+              <p className="mt-1 text-xs text-[#6b7280]">
+                登录后可同步编辑工作台并保存历史 / Sign in to sync the editing console and store your history.
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+              {isCheckingAuth ? (
+                <span className="text-xs text-[#6b7280]">
+                  正在检测登录状态… · Checking sign-in status…
+                </span>
+              ) : authUser ? (
+                <div className="flex items-center gap-3">
+                  {avatarUrl ? (
+                    <img
+                      alt="GitHub avatar"
+                      src={avatarUrl}
+                      className="h-10 w-10 rounded-full border border-banana-200 bg-white object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-banana-200 bg-white text-sm font-semibold">
+                      {displayInitial}
+                    </div>
+                  )}
+                  <div className="text-left">
+                    <p className="text-sm font-semibold text-[#111827]">{displayName}</p>
+                    <p className="text-xs text-[#6b7280]">
+                      已通过 GitHub 登录 · Signed in with GitHub
+                    </p>
+                  </div>
+                  <button
+                    className="rounded-pill border border-[#d1d5db] bg-white px-4 py-2 text-xs font-semibold text-[#111827] transition hover:border-[#111827]/60 hover:text-[#111827] disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={isSigningOut}
+                    onClick={handleSignOut}
+                    type="button"
+                  >
+                    {isSigningOut ? '正在退出… · Signing out…' : '退出登录 · Sign out'}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  className="inline-flex items-center gap-2 rounded-pill bg-[#111827] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#060913]"
+                  onClick={handleGitHubLogin}
+                  type="button"
+                >
+                  <span className="text-lg">🐙</span>
+                  <span>使用 GitHub 登录 · Sign in with GitHub</span>
+                </button>
+              )}
+            </div>
+          </div>
+          {authError ? (
+            <p
+              className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 shadow-soft"
+              role="alert"
+            >
+              {authError}
+            </p>
+          ) : authFeedback ? (
+            <p
+              className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 shadow-soft"
+              role="status"
+            >
+              {authFeedback}
+            </p>
+          ) : null}
+        </div>
+      </section>
+      <main className="w-full">
       {/* 首屏品牌 Hero */}
       <section className="section pt-20 pb-16">
         <div className="section-inner text-center">
@@ -694,5 +917,6 @@ export default function Page() {
       {/* 页脚占位 */}
       <div className="h-24" />
     </main>
-  )
+    </>
+  );
 }
