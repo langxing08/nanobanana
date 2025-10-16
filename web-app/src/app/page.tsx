@@ -4,13 +4,13 @@ import type { User } from '@supabase/supabase-js';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
-  'github-signin-failed': 'GitHub 登录失败，请稍后重试 · GitHub sign-in failed, please try again.',
-  'google-signin-failed': 'Google 登录失败，请稍后重试 · Google sign-in failed, please try again.',
-  'exchange-failed': '无法创建登录会话，请重新尝试 · Unable to create a login session, please try again.',
-  missing_code: '缺少授权代码，无法完成登录 · Missing authorization code, unable to finish sign-in.',
+  'github-signin-failed': 'GitHub 登录失败，请稍后重试。',
+  'google-signin-failed': 'Google 登录失败，请稍后重试。',
+  'exchange-failed': '无法创建登录会话，请重新尝试。',
+  missing_code: '缺少授权代码，无法完成登录。',
 };
 
-const AUTH_STATUS_ERROR = '无法获取登录状态，请重试 · Unable to check your sign-in status. Please try again.';
+const AUTH_STATUS_ERROR = '无法获取登录状态，请重试。';
 
 export default function Page() {
   type EditorTab = 'image' | 'text';
@@ -28,7 +28,9 @@ export default function Page() {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [authFeedback, setAuthFeedback] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isAuthMenuOpen, setIsAuthMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const authMenuRef = useRef<HTMLDivElement | null>(null);
   const tabs: { id: EditorTab; label: string; icon: string }[] = [
     { id: 'image', label: '图生图', icon: '🖼️' },
     { id: 'text', label: '文生图', icon: '📝' },
@@ -207,6 +209,29 @@ export default function Page() {
   ];
   const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
+  useEffect(() => {
+    if (!isAuthMenuOpen) {
+      return;
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (authMenuRef.current && !authMenuRef.current.contains(event.target as Node)) {
+        setIsAuthMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isAuthMenuOpen]);
+
+  useEffect(() => {
+    if (authUser) {
+      setIsAuthMenuOpen(false);
+    }
+  }, [authUser]);
+
   const handleOAuthSignIn = (provider: 'github' | 'google') => {
     setAuthError(null);
     setAuthFeedback(null);
@@ -228,17 +253,15 @@ export default function Page() {
         const message =
           typeof payload?.error === 'string'
             ? payload.error
-            : '退出失败，请稍后重试 · Sign-out failed, please try again.';
+            : '退出失败，请稍后重试。';
         throw new Error(message);
       }
 
       setAuthUser(null);
-      setAuthFeedback('退出成功，稍后可再次登录 · Signed out successfully, sign in again anytime.');
+      setAuthFeedback('退出成功，稍后可再次登录。');
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : '退出失败，请稍后重试 · Sign-out failed, please try again.';
+        error instanceof Error ? error.message : '退出失败，请稍后重试。';
       setAuthError(message);
     } finally {
       setIsSigningOut(false);
@@ -357,90 +380,113 @@ export default function Page() {
 
   return (
     <>
-      <section className="section pt-6">
-        <div className="section-inner">
-          <div className="flex flex-col gap-3 rounded-2xl border border-banana-200 bg-white/80 p-4 text-[#111827] shadow-soft backdrop-blur supports-[backdrop-filter]:bg-white/60 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold">
-                连接 GitHub 解锁云端保存 · Link GitHub to unlock cloud saves
-              </p>
-              <p className="mt-1 text-xs text-[#6b7280]">
-                登录后可同步编辑工作台并保存历史 / Sign in to sync the editing console and store your history.
-              </p>
-            </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-              {isCheckingAuth ? (
-                <span className="text-xs text-[#6b7280]">
-                  正在检测登录状态… · Checking sign-in status…
-                </span>
-              ) : authUser ? (
-                <div className="flex items-center gap-3">
-                  {avatarUrl ? (
-                    <img
-                      alt="用户头像 · User avatar"
-                      src={avatarUrl}
-                      className="h-10 w-10 rounded-full border border-banana-200 bg-white object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                  ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-banana-200 bg-white text-sm font-semibold">
-                      {displayInitial}
-                    </div>
-                  )}
-                  <div className="text-left">
-                    <p className="text-sm font-semibold text-[#111827]">{displayName}</p>
-                    <p className="text-xs text-[#6b7280]">
-                      已通过 GitHub 登录 · Signed in with GitHub
-                    </p>
-                  </div>
-                  <button
-                    className="rounded-pill border border-[#d1d5db] bg-white px-4 py-2 text-xs font-semibold text-[#111827] transition hover:border-[#111827]/60 hover:text-[#111827] disabled:cursor-not-allowed disabled:opacity-50"
-                    disabled={isSigningOut}
-                    onClick={handleSignOut}
-                    type="button"
-                  >
-                    {isSigningOut ? '正在退出… · Signing out…' : '退出登录 · Sign out'}
-                  </button>
-                </div>
+      <header className="sticky top-0 z-40 flex justify-center bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <div className="section-inner flex items-center justify-end py-4">
+          {isCheckingAuth ? (
+            <span className="rounded-full bg-white/80 px-4 py-2 text-xs font-medium text-[#6b7280] shadow-soft">
+              正在检测登录状态…
+            </span>
+          ) : authUser ? (
+            <div className="flex items-center gap-3 rounded-full bg-white/80 px-4 py-2 shadow-soft">
+              {avatarUrl ? (
+                <img
+                  alt="用户头像"
+                  src={avatarUrl}
+                  className="h-9 w-9 rounded-full border border-banana-200 bg-white object-cover"
+                  referrerPolicy="no-referrer"
+                />
               ) : (
-                <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
-                  <button
-                    className="inline-flex items-center gap-2 rounded-pill bg-[#111827] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#060913]"
-                    onClick={() => handleOAuthSignIn('github')}
-                    type="button"
-                  >
-                    <span className="text-lg">🐙</span>
-                    <span>使用 GitHub 登录 · Sign in with GitHub</span>
-                  </button>
-                  <button
-                    className="inline-flex items-center gap-2 rounded-pill border border-[#d1d5db] bg-white px-5 py-2 text-sm font-semibold text-[#111827] transition hover:border-[#111827]/60 hover:text-[#111827]"
-                    onClick={() => handleOAuthSignIn('google')}
-                    type="button"
-                  >
-                    <span className="text-lg">🟢</span>
-                    <span>使用 Google 登录 · Sign in with Google</span>
-                  </button>
+                <div className="flex h-9 w-9 items-center justify-center rounded-full border border-banana-200 bg-white text-sm font-semibold">
+                  {displayInitial}
                 </div>
               )}
+              <div className="flex flex-col text-left">
+                <span className="text-sm font-semibold text-[#111827]">{displayName}</span>
+                <span className="text-[11px] text-[#6b7280]">已登录 Nano Banana</span>
+              </div>
+              <button
+                className="rounded-full border border-[#d1d5db] bg-white px-3 py-1.5 text-xs font-semibold text-[#111827] transition hover:border-[#111827]/60 hover:text-[#111827] disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={isSigningOut}
+                onClick={handleSignOut}
+                type="button"
+              >
+                {isSigningOut ? '正在退出…' : '退出登录'}
+              </button>
             </div>
-          </div>
-          {authError ? (
+          ) : (
+            <div className="relative" ref={authMenuRef}>
+              <button
+                aria-expanded={isAuthMenuOpen}
+                aria-haspopup="true"
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ffa733] via-[#ffb648] to-[#ffd85e] px-6 py-2 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(255,176,28,0.4)] transition-transform transition-shadow hover:-translate-y-px hover:shadow-[0_12px_28px_rgba(255,176,28,0.45)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ffb648]"
+                onClick={() => setIsAuthMenuOpen((open) => !open)}
+                type="button"
+              >
+                <span aria-hidden className="text-lg font-bold">
+                  →
+                </span>
+                <span>登录</span>
+              </button>
+              {isAuthMenuOpen ? (
+                <div className="absolute right-0 mt-3 w-64 rounded-2xl border border-[#f5d48c] bg-white/95 p-3 text-sm text-[#111827] shadow-[0_18px_36px_rgba(255,176,28,0.25)] backdrop-blur">
+                  <p className="px-2 text-xs text-[#6b7280]">选择登录方式</p>
+                  <div className="mt-2 flex flex-col gap-2">
+                    <button
+                      className="inline-flex items-center gap-2 rounded-full bg-[#111827] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#060913]"
+                      onClick={() => {
+                        setIsAuthMenuOpen(false);
+                        handleOAuthSignIn('github');
+                      }}
+                      type="button"
+                    >
+                      <span className="text-lg" aria-hidden>
+                        🐙
+                      </span>
+                      <span>使用 GitHub 登录</span>
+                    </button>
+                    <button
+                      className="inline-flex items-center gap-2 rounded-full border border-[#d1d5db] bg-white px-4 py-2 text-sm font-semibold text-[#111827] transition hover:border-[#111827]/60 hover:text-[#111827]"
+                      onClick={() => {
+                        setIsAuthMenuOpen(false);
+                        handleOAuthSignIn('google');
+                      }}
+                      type="button"
+                    >
+                      <span className="text-lg" aria-hidden>
+                        🟢
+                      </span>
+                      <span>使用 Google 登录</span>
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          )}
+        </div>
+      </header>
+      {authError ? (
+        <section className="section pt-6">
+          <div className="section-inner">
             <p
-              className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 shadow-soft"
+              className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 shadow-soft"
               role="alert"
             >
               {authError}
             </p>
-          ) : authFeedback ? (
+          </div>
+        </section>
+      ) : authFeedback ? (
+        <section className="section pt-6">
+          <div className="section-inner">
             <p
-              className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 shadow-soft"
+              className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 shadow-soft"
               role="status"
             >
               {authFeedback}
             </p>
-          ) : null}
-        </div>
-      </section>
+          </div>
+        </section>
+      ) : null}
       <main className="w-full">
       {/* 首屏品牌 Hero */}
       <section className="section pt-20 pb-16">
