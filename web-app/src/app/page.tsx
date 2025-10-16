@@ -131,48 +131,28 @@ export default function Page() {
   }, [imageFile]);
   const showcases = [
     {
-      title: '超快速山景生成',
+      title: '极速山景生成演示',
       tag: 'Nano Banana速度',
-      subtitle: 'Nano Banana 优化神经引擎仅需 0.8 秒即可创建',
+      subtitle: 'Nano Banana 优化神经引擎在内测环境下展现出秒级响应。',
       image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80',
     },
     {
-      title: '瞬间花园创作',
+      title: '花园创作示例',
       tag: 'Nano Banana速度',
-      subtitle: 'Nano Banana 技术毫秒级渲染复杂场景',
+      subtitle: '复杂场景渲染由 Nano Banana 模型实时生成，结果因素材而异。',
       image: 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1600&q=80',
     },
     {
-      title: '实时海滩合成',
+      title: '海滩合成示例',
       tag: 'Nano Banana速度',
-      subtitle: 'Nano Banana 以光速提供照片级逼真效果',
+      subtitle: '示例输出展示 Nano Banana 保留光影细节的能力。',
       image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80',
     },
     {
-      title: '快速极光生成',
+      title: '极光生成示例',
       tag: 'Nano Banana速度',
-      subtitle: 'Nano Banana AI 即时处理高动态特效',
+      subtitle: '高动态场景处理需视模型队列与提示词复杂度而定。',
       image: 'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&w=1600&q=80',
-    },
-  ];
-  const creatorTestimonials = [
-    {
-      name: 'AIArtistPro',
-      role: '数字创作者',
-      quote: '“这个编辑器完全改变了我的工作流程，角色一致性始终如一，远超以往工具。”',
-      accentGradient: 'from-[#ffd76a] via-[#ffa43c] to-[#ff7d3b]',
-    },
-    {
-      name: 'ContentCreator',
-      role: 'UGC 专家',
-      quote: '“创建一致的 AI 影响者从未如此简单，在编辑过程中保持完美的面部细节。”',
-      accentGradient: 'from-[#ffc86c] via-[#ff9f3e] to-[#ff6f3a]',
-    },
-    {
-      name: 'PhotoEditor',
-      role: '专业编辑师',
-      quote: '“场景融合异常自然，一键编辑每天都能生成客户即用的画面。”',
-      accentGradient: 'from-[#ffbe63] via-[#ff8f3a] to-[#ff5f39]',
     },
   ];
   const faqItems = [
@@ -187,9 +167,11 @@ export default function Page() {
       answerEn: 'You describe edits in natural language, and the model applies context-aware adjustments using smart masking.',
     },
     {
-      question: '它比 Flux Kontext 好在哪里？',
-      answerZh: 'Nano Banana 在多角色一致性、背景保留与批处理效率上均优于 Flux Kontext。',
-      answerEn: 'Compared with Flux Kontext, Nano Banana excels at multi-character alignment, scene preservation, and batch speed.',
+      question: 'Nano Banana 与 Flux Kontext 有何区别？',
+      answerZh:
+        'Nano Banana 专注角色一致性与场景保留，适合需要多镜头连贯素材的创作者；Flux Kontext 更偏向通用生成，可根据具体需求自由选择。',
+      answerEn:
+        'Nano Banana focuses on character consistency and scene fidelity, making it ideal for story-driven workflows, while Flux Kontext offers broader generative coverage—pick the tool that matches your use case.',
     },
     {
       question: '我可以用于商业项目吗？',
@@ -380,8 +362,42 @@ export default function Page() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 flex justify-center bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-        <div className="section-inner flex items-center justify-end py-4">
+      <header className="sticky top-0 z-40 flex justify-center bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+        <div className="section-inner flex items-center justify-between gap-4 py-4">
+          <div className="flex items-center gap-10">
+            <a className="text-lg font-bold tracking-wide text-[#f59e0b]" href="/">
+              Nano Banana
+            </a>
+            <nav aria-label="主要导航">
+              <ul className="flex items-center gap-6 text-sm font-medium text-[#374151]">
+                <li>
+                  <a className="transition-colors hover:text-[#f59e0b]" href="#showcases">
+                    产品亮点
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#f59e0b]" href="/pricing">
+                    套餐定价
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#f59e0b]" href="/privacy-policy">
+                    隐私政策
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#f59e0b]" href="/terms-of-service">
+                    服务条款
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#f59e0b]" href="mailto:hello@nanobanana.ai">
+                    客服邮箱
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
           {isCheckingAuth ? (
             <span className="rounded-full bg-white/80 px-4 py-2 text-xs font-medium text-[#6b7280] shadow-soft">
               正在检测登录状态…
@@ -493,27 +509,27 @@ export default function Page() {
         <div className="section-inner text-center">
           <div className="inline-flex items-center gap-2 rounded-pill border border-banana-200 bg-banana-50 px-6 py-2 text-[14px] text-banana-600 shadow-soft">
             <span className="text-[18px]">🍌</span>
-            <span>超越 Flux Kontext 的 AI 模型</span>
-            <a className="ml-2 font-semibold text-banana-600 hover:text-banana-500 transition-colors" href="#">
+            <span>角色一致性 AI 模型</span>
+            <a className="ml-2 font-semibold text-banana-600 hover:text-banana-500 transition-colors" href="/pricing">
               立即试用 →
             </a>
           </div>
           <h1 className="mt-10 text-[60px] font-extrabold text-banana-500 tracking-[1px]">Nano Banana</h1>
           <p className="mt-4 text-[16px] leading-8 text-[#485268]">
-            用简单的文字提示变换任何图像。Nano Banana的先进模型提供超越 Flux Kontext 的一致性角色编辑和场景保留。体验 AI 图像编辑的未来。
+            用简单的文字提示变换任何图像。Nano Banana 的模型专注于角色一致性与场景保留，帮助创作者快速获取高质量视觉素材。
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <a
               className="inline-flex items-center gap-2 rounded-pill bg-banana-400 px-8 py-3 text-[16px] font-semibold text-white shadow-soft hover:bg-banana-500 transition-colors"
-              href="#"
+              href="#editor-demo"
             >
               开始编辑
               <span className="text-[18px]">🍌</span>
             </a>
             <a
               className="inline-flex items-center justify-center rounded-pill border border-banana-300 bg-white px-8 py-3 text-[16px] font-semibold text-banana-600 shadow-soft hover:border-banana-400 hover:text-banana-500 transition-colors"
-              href="#"
+              href="#showcases"
             >
               查看示例
             </a>
@@ -537,7 +553,7 @@ export default function Page() {
       </section>
 
       {/* 试用 AI 编辑器 */}
-      <section className="section mt-16">
+      <section className="section mt-16" id="editor-demo">
         <div className="section-inner">
           <div className="text-center">
             <p className="text-[12px] font-bold text-banana-500">开始使用</p>
@@ -717,9 +733,7 @@ export default function Page() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[14px]">⏱️</span>
-                        <span>
-                          平均生成时间 <span className="font-semibold text-[#a67200]">≈ 5 秒</span>
-                        </span>
+                        <span>实际生成耗时取决于提示词复杂度与队列负载</span>
                       </div>
                     </div>
                   </>
@@ -799,9 +813,9 @@ export default function Page() {
       <section className="section mt-20">
         <div className="section-inner text-center">
           <p className="text-[12px] font-semibold tracking-[2px] text-[#f29b1d] uppercase">核心功能</p>
-          <h2 className="mt-3 text-[32px] font-extrabold text-[#1f2937]">为什么选择Nano Banana?</h2>
+          <h2 className="mt-3 text-[32px] font-extrabold text-[#1f2937]">为什么选择 Nano Banana？</h2>
           <p className="mt-3 text-[14px] leading-6 text-[#6b7280]">
-            Nano Banana 是 LMArena 上最先进的 AI 图像编辑器。用自然语言理解彻底改变您的照片编辑方式。
+            Nano Banana 聚焦角色一致性、场景保留与批量生成，帮助创作者用自然语言完成复杂的图像编辑任务。
           </p>
 
           <div className="mt-12 grid gap-5 lg:grid-cols-3">
@@ -819,7 +833,7 @@ export default function Page() {
               {
                 icon: '🌆',
                 title: '场景保留',
-                copy: '无缝融合编辑内容与原始背景，场景过渡能力领先 Flux Kontext。',
+                copy: '无缝融合编辑内容与原始背景，减少额外抠图与二次修图的工作量。',
               },
               {
                 icon: '⚙️',
@@ -853,11 +867,11 @@ export default function Page() {
       </section>
 
       {/* 闪电般的 AI 创作（案例卡） */}
-      <section className="section mt-20">
+      <section className="section mt-20" id="showcases">
         <div className="section-inner text-center">
           <p className="text-[12px] font-semibold tracking-[2px] text-[#f29b1d] uppercase">案例展示</p>
           <h2 className="mt-3 text-[30px] font-extrabold text-[#1f2937]">闪电般的 AI 创作</h2>
-          <p className="mt-2 text-[14px] text-[#6b7280]">见证 Nano Banana 毫秒级生成作品</p>
+          <p className="mt-2 text-[14px] text-[#6b7280]">了解 Nano Banana 的生成流程与演示案例</p>
 
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
             {showcases.map((showcase, index) => (
@@ -888,40 +902,32 @@ export default function Page() {
         </div>
       </section>
 
-      {/* 创作者的声音 */}
+      {/* 合规与支持承诺 */}
       <section className="section mt-20">
-        <div className="section-inner relative">
-          <div className="relative mx-auto max-w-2xl text-center">
-            <p className="text-[12px] font-semibold tracking-[3px] text-[#f59e0b]">用户评价</p>
-            <h2 className="mt-3 text-[30px] font-extrabold text-[#101827] md:text-[36px]">创作者的声音</h2>
-          </div>
-
-          <div className="relative mt-12">
-            <div className="relative grid gap-6 lg:grid-cols-3">
-              {creatorTestimonials.map((testimonial) => (
-                <article
-                  key={testimonial.name}
-                  className="relative aspect-[2/1] overflow-hidden rounded-[28px] border border-[#f4e4c8] bg-transparent text-left shadow-none transition-transform duration-200 hover:-translate-y-1"
-                >
-                  <div className="flex h-full flex-col px-6 py-6">
-                    <div className="flex items-center gap-4">
-                      <span
-                        aria-hidden
-                        className={`flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br ${testimonial.accentGradient} text-[18px] font-semibold text-white shadow-[0_16px_26px_rgba(255,171,72,0.35)] ring-4 ring-white/70`}
-                      >
-                        {testimonial.name.slice(0, 1)}
-                      </span>
-                      <div className="space-y-1">
-                        <p className="text-[15px] font-semibold text-[#111827] leading-[1.25]">{testimonial.name}</p>
-                        <p className="text-[11px] leading-[18px] text-[#6b7280]">{testimonial.role}</p>
-                      </div>
-                    </div>
-
-                    <p className="mt-5 text-[12px] leading-[22px] text-[#4a5362]">{testimonial.quote}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
+        <div className="section-inner">
+          <div className="rounded-[28px] border border-[#fde8b5] bg-gradient-to-r from-[#fff9ec] via-white to-[#fff5e0] p-8 shadow-soft">
+            <h2 className="text-[26px] font-extrabold text-[#1f2937]">合规与支持承诺 · Compliance & Support</h2>
+            <p className="mt-3 text-[14px] leading-7 text-[#4b5563]">
+              Nano Banana 仅提供合法的 AI 图像编辑软件服务，无虚构用户与评价。我们通过 Creem 完成数字商品售卖，并保持透明的计费流程与客户支持。
+            </p>
+            <ul className="mt-6 grid gap-4 text-[13px] leading-6 text-[#4b5563] md:grid-cols-2">
+              <li className="flex items-start gap-2">
+                <span aria-hidden>✅</span>
+                <span>产品介绍与截图均基于当前功能，页面不包含虚假评论或未经验证的奖项。</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span aria-hidden>✅</span>
+                <span>所有付费方案在 <a className="font-semibold text-[#d97706] underline-offset-2 hover:underline" href="/pricing">套餐定价页</a> 清晰展示，可随时访问。</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span aria-hidden>✅</span>
+                <span>隐私政策与服务条款已上线，规范数据处理与退款流程，便于 Creem 审核。</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span aria-hidden>✅</span>
+                <span>官方客服邮箱 <a className="font-semibold text-[#d97706] underline-offset-2 hover:underline" href="mailto:hello@nanobanana.ai">hello@nanobanana.ai</a> 全天候接收咨询。</span>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
@@ -971,8 +977,77 @@ export default function Page() {
         </div>
       </section>
 
-      {/* 页脚占位 */}
-      <div className="h-24" />
+      <footer className="bg-[#111827] py-12 text-[#e5e7eb]">
+        <div className="section-inner flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-3">
+            <p className="text-lg font-semibold text-white">Nano Banana</p>
+            <p className="max-w-sm text-[13px] leading-6">
+              专注角色一致性的 AI 图像编辑工作台，由上海纳米香蕉科技有限公司运营。所有订单由 Creem 作为交易记录主体（Merchant of Record）完成。
+            </p>
+            <p className="text-[13px]">
+              客服邮箱：
+              <a className="ml-1 font-semibold text-[#fbbf24] hover:underline" href="mailto:hello@nanobanana.ai">
+                hello@nanobanana.ai
+              </a>
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-8 text-[13px] leading-6 md:grid-cols-3">
+            <div>
+              <p className="text-sm font-semibold text-white">产品</p>
+              <ul className="mt-3 space-y-2">
+                <li>
+                  <a className="transition-colors hover:text-[#fbbf24]" href="#editor-demo">
+                    在线编辑体验
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#fbbf24]" href="#showcases">
+                    案例展示
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#fbbf24]" href="/pricing">
+                    套餐定价
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">政策</p>
+              <ul className="mt-3 space-y-2">
+                <li>
+                  <a className="transition-colors hover:text-[#fbbf24]" href="/privacy-policy">
+                    隐私政策
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#fbbf24]" href="/terms-of-service">
+                    服务条款
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">支持</p>
+              <ul className="mt-3 space-y-2">
+                <li>
+                  <a className="transition-colors hover:text-[#fbbf24]" href="mailto:hello@nanobanana.ai">
+                    联系客服
+                  </a>
+                </li>
+                <li>
+                  <a className="transition-colors hover:text-[#fbbf24]" href="https://docs.creem.io/faq/prohibited-products" target="_blank" rel="noreferrer">
+                    Creem 禁止售卖列表
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div className="section-inner mt-8 border-t border-white/10 pt-6 text-[12px] text-[#9ca3af]">
+          © {new Date().getFullYear()} Nano Banana. 保留所有权利。
+        </div>
+      </footer>
     </main>
     </>
   );

@@ -24,7 +24,8 @@ const FAQS = [
   },
   {
     question: 'Creem 支付是否安全？',
-    answer: 'Creem 提供 PCI DSS 级别的加密，并支持 3D Secure 与 Apple Pay。',
+    answer:
+      'Creem 作为 Merchant of Record 负责支付与税务合规，交易通过符合 PCI DSS 要求的加密网络处理。',
   },
   {
     question: '十月上线的新功能如何体验？',
