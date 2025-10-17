@@ -390,11 +390,6 @@ export default function Page() {
                     服务条款
                   </a>
                 </li>
-                <li>
-                  <a className="transition-colors hover:text-[#f59e0b]" href="mailto:hello@nanobanana.ai">
-                    客服邮箱
-                  </a>
-                </li>
               </ul>
             </nav>
           </div>
@@ -1033,11 +1028,6 @@ export default function Page() {
                 <li>
                   <a className="transition-colors hover:text-[#fbbf24]" href="mailto:hello@nanobanana.ai">
                     联系客服
-                  </a>
-                </li>
-                <li>
-                  <a className="transition-colors hover:text-[#fbbf24]" href="https://docs.creem.io/faq/prohibited-products" target="_blank" rel="noreferrer">
-                    Creem 禁止售卖列表
                   </a>
                 </li>
               </ul>
